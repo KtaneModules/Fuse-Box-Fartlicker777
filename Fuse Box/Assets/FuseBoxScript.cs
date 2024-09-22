@@ -39,7 +39,8 @@ public class FuseBoxScript : MonoBehaviour {
 
    bool WillDictationStrike = true;
    bool DicationFailing;
-   
+
+   static bool DictationCurrentlyActive = false;
    static int moduleIdCounter = 1;
    int moduleId;
    private bool moduleSolved;
@@ -50,6 +51,10 @@ public class FuseBoxScript : MonoBehaviour {
          KMSelectable pressed = obj;
          pressed.OnInteract += delegate () { PressButton(pressed); return false; };
       }
+   }
+
+   void OnDestroy () {
+      DictationCurrentlyActive = false;
    }
 
    private string GetMissionID () {
@@ -140,6 +145,7 @@ public class FuseBoxScript : MonoBehaviour {
    }
 
    private void StartDictationEngine () {
+      DictationCurrentlyActive = true;
       dictationRecognizer = new DictationRecognizer();
       dictationRecognizer.DictationResult += DictationRecognizer_OnDictationResult;
       dictationRecognizer.DictationComplete += DictationRecognizer_OnDictationComplete;
@@ -337,7 +343,7 @@ public class FuseBoxScript : MonoBehaviour {
       StartCoroutine(LightCycle());
 
 
-      if (GetMissionID() != "mod_ThiccBombs_the47better") {
+      if (GetMissionID() != "mod_ThiccBombs_the47better" && !DictationCurrentlyActive) {
          StartDictationEngine();
       }
       
